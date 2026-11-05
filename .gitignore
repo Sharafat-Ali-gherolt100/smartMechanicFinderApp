@@ -1,0 +1,78 @@
+# ============ Secrets ============
+.env
+.env.*
+!.env.example
+*.env
+
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+backend/venv/
+*.egg-info/
+.pytest_cache/
+
+# ============ Node / React Native ============
+node_modules/
+.expo/
+.expo-shared/
+/dist/
+/build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============ Android build artifacts ============
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/local.properties
+mobile/android/app/src/main/assets/index.android.bundle
+*.apk
+*.aab
+*.ap_
+*.dex
+*.so
+*.keystore
+!debug.keystore
+
+# ============ Generated Android video copies ============
+mobile/android/app/src/main/res/raw/*.mp4
+mobile/android/app/src/main/assets/videos/*.mp4
+
+# ============ iOS ============
+mobile/ios/Pods/
+mobile/ios/build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# ============ MongoDB local data ============
+backend/data/
+data/
+mongodb/
+mongodb8/
+mongodb82/
+
+# ============ JDK / uploads ============
+jdk-17/
+uploads/
+
+# ============ OS / Editor ============
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ============ Agents / tools ============
+.agents/
+*.ps1
+*.bat
+
+
+# ============ Logs ============
+*.log
+mobile/ios/main.jsbundle

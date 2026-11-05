@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-native-community/netinfo/android/build.gradle b/node_modules/@react-native-community/netinfo/android/build.gradle
+index 82b3c9a..d3e0e7f 100644
+--- a/node_modules/@react-native-community/netinfo/android/build.gradle
++++ b/node_modules/@react-native-community/netinfo/android/build.gradle
+@@ -29,6 +29,7 @@ def getExtOrIntegerDefault(name) {
+ apply plugin: 'com.android.library'
+ 
+ android {
++  namespace "com.reactnativecommunity.netinfo"
+   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+ 
+   compileOptions {

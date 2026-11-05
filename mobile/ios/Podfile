@@ -1,0 +1,54 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-e',
+  'process.stdout.write(require("path").dirname(require.resolve("react-native/package.json")) + "/scripts/react_native_pods.rb")',
+]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'SmartMechanicFinder' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  # react-native-maps
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
+  # react-native-vector-icons
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  # react-native-geolocation-service
+  pod 'react-native-geolocation-service', :path => '../node_modules/react-native-geolocation-service'
+
+  # @react-native-async-storage/async-storage
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+
+  # @react-native-community/netinfo
+  pod 'RNCNetInfo', :path => '../node_modules/@react-native-community/netinfo'
+
+  # react-native-webview (map fallback + general use)
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
+  target 'SmartMechanicFinderTests' do
+    inherit! :complete
+    # Pods for testing
+  end
+
+  post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+  end
+end
