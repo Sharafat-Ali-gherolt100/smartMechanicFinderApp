@@ -23,10 +23,8 @@ const API_HOST = USE_PHYSICAL_DEVICE_IP && PHYSICAL_DEVICE_HOST
   ? PHYSICAL_DEVICE_HOST
   : DEFAULT_HOST;
 
-// Render live production URL: paste your Render backend URL here after deploying!
-// Example: 'https://smart-mechanic-finder-backend.onrender.com/api'
-// Set to null to use local dev Wi-Fi / emulator host.
-export const PRODUCTION_RENDER_URL = null;
+// Render live production URL:
+export const PRODUCTION_RENDER_URL = 'https://smart-mechanics-finder-backend.onrender.com/api';
 
 export const API_BASE_URL =
   PRODUCTION_RENDER_URL ||
