@@ -11,6 +11,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 _client = None
+_client_uri = None
 
 
 def is_mongodb_listening(host='127.0.0.1', port=27017, timeout=1.0):
@@ -55,7 +56,6 @@ def ensure_mongodb_running(host='127.0.0.1', port=27017):
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            # Wait up to 5 seconds for port to become ready
             for _ in range(10):
                 time.sleep(0.5)
                 if is_mongodb_listening(host, port):
@@ -69,27 +69,37 @@ def ensure_mongodb_running(host='127.0.0.1', port=27017):
     return is_mongodb_listening(host, port)
 
 
+def get_mongo_client(uri: str) -> MongoClient:
+    """Return a thread-safe pooled MongoClient, reusing the client across requests."""
+    global _client, _client_uri
+    if _client is None or _client_uri != uri:
+        if _client is not None:
+            try:
+                _client.close()
+            except Exception:
+                pass
+        _client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        _client_uri = uri
+    return _client
+
+
 def get_db():
     """Get MongoDB database connection (request-scoped via flask.g)."""
     if 'db' not in g:
-        # Check if local Mongo is reachable; auto-start if down
         uri = current_app.config.get('MONGODB_URI', '')
         if 'localhost' in uri or '127.0.0.1' in uri:
             if not is_mongodb_listening():
                 ensure_mongodb_running()
 
         try:
-            client = MongoClient(
-                current_app.config['MONGODB_URI'],
-                serverSelectionTimeoutMS=5000,
-            )
-            client.admin.command('ping')
-            # Parse DB name from URI, fallback to explicit name
+            client = get_mongo_client(uri)
             from urllib.parse import urlparse
-            parsed = urlparse(current_app.config['MONGODB_URI'])
-            db_name = parsed.path.lstrip('/') or 'mechanic_finder_db'
+            parsed = urlparse(uri)
+            raw_path = parsed.path.lstrip('/')
+            db_name = raw_path.split('?')[0] if raw_path else 'mechanic_finder_db'
+            if not db_name:
+                db_name = 'mechanic_finder_db'
             g.db = client.get_database(db_name)
-            g._mongo_client = client
         except (ConnectionFailure, ServerSelectionTimeoutError, AutoReconnect) as e:
             logger.error('MongoDB connection failed: %s', e)
             raise
@@ -167,9 +177,6 @@ def init_db(app):
 
 
 def close_db(e=None):
-    """Close database connection for the request."""
-    client = g.pop('_mongo_client', None)
+    """Release request-scoped db reference without closing shared MongoClient."""
     g.pop('db', None)
-    if client is not None:
-        client.close()
 

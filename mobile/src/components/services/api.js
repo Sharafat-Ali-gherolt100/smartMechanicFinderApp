@@ -23,10 +23,15 @@ const API_HOST = USE_PHYSICAL_DEVICE_IP && PHYSICAL_DEVICE_HOST
   ? PHYSICAL_DEVICE_HOST
   : DEFAULT_HOST;
 
+// Render live production URL: paste your Render backend URL here after deploying!
+// Example: 'https://smart-mechanic-finder-backend.onrender.com/api'
+// Set to null to use local dev Wi-Fi / emulator host.
+export const PRODUCTION_RENDER_URL = null;
+
 export const API_BASE_URL =
-  (typeof process !== 'undefined' && process.env && process.env.EXPO_PUBLIC_API_URL)
-    ? process.env.EXPO_PUBLIC_API_URL
-    : `http://${API_HOST}:5000/api`;
+  PRODUCTION_RENDER_URL ||
+  (typeof process !== 'undefined' && process.env && process.env.EXPO_PUBLIC_API_URL) ||
+  `http://${API_HOST}:5000/api`;
 
 
 const api = axios.create({

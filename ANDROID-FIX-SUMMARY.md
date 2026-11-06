@@ -148,6 +148,7 @@ JWT_SECRET_KEY=super_secret_jwt_key_change_me_in_production
 JWT_EXPIRES_SECONDS=86400
 ```
 
+
 **Fixed in `backend/app/__init__.py`:**
 - ✅ CORS enabled for all origins (development)
 - ✅ MongoDB connection with proper error handling
