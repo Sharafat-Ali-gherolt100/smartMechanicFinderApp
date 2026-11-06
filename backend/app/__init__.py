@@ -163,3 +163,7 @@ def create_app():
         pass
 
     return app
+
+
+# Default WSGI entry point for 'gunicorn app:app'
+app = create_app()
